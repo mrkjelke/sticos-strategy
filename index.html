@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticos Strategisjekk 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0d1b2e;
+  --navy-mid: #152338;
+  --navy-light: #1e3050;
+  --pink: #e85d9a;
+  --mint: #7ee8c8;
+  --gold: #ffc850;
+  --white: #f4f7f5;
+  --muted: #8a9bb0;
+  --card: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(232,93,154,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(126,232,200,0.06) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.app { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 280px; flex-shrink: 0;
+  background: rgba(10,16,26,0.8);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.logo { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+.logo-mark {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--mint));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--navy); flex-shrink: 0;
+}
+.logo-name { font-weight: 600; font-size: 14px; letter-spacing: 0.03em; }
+.sidebar-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+}
+.btn-new {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pink), #c8458a);
+  color: white; border: none; border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  padding: 11px 16px; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+}
+.btn-new:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,93,154,0.3); }
+
+/* Archive list */
+.archive-controls {
+  padding: 12px 20px 8px;
+  display: flex; gap: 6px; flex-shrink: 0;
+}
+.sort-btn {
+  flex: 1; background: var(--card); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 6px; font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500; padding: 6px 8px; cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.04em;
+}
+.sort-btn.active { border-color: rgba(126,232,200,0.35); color: var(--mint); }
+.sort-btn:hover:not(.active) { border-color: var(--border-hover); color: var(--white); }
+
+.archive-list {
+  flex: 1; overflow-y: auto; padding: 8px 12px 20px;
+}
+.archive-list::-webkit-scrollbar { width: 3px; }
+.archive-list::-webkit-scrollbar-track { background: transparent; }
+.archive-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.archive-empty {
+  padding: 24px 8px; text-align: center;
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+}
+
+.idea-item {
+  padding: 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.15s; margin-bottom: 6px;
+}
+.idea-item:hover { background: var(--card); border-color: var(--border); }
+.idea-item.active { background: rgba(126,232,200,0.06); border-color: rgba(126,232,200,0.2); }
+
+.idea-item-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.idea-score-badge {
+  font-size: 12px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px; flex-shrink: 0;
+}
+.idea-score-badge.green { background: rgba(126,232,200,0.15); color: var(--mint); }
+.idea-score-badge.yellow { background: rgba(255,200,80,0.12); color: var(--gold); }
+.idea-score-badge.red { background: rgba(232,93,154,0.12); color: var(--pink); }
+
+.idea-title {
+  font-size: 13px; font-weight: 500; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--white);
+}
+.idea-meta {
+  font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.idea-iter-count {
+  font-size: 10px; background: rgba(255,255,255,0.07);
+  padding: 1px 6px; border-radius: 10px;
+}
+
+/* Main panel */
+.main { flex: 1; overflow-y: auto; }
+.main-inner { max-width: 720px; margin: 0 auto; padding: 52px 40px 100px; }
+
+/* ── HOME / NEW IDEA ── */
+.view { display: none; }
+.view.active { display: block; }
+
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pink); margin-bottom: 10px; }
+h1 { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.18; margin-bottom: 14px; }
+h1 em { font-style: italic; color: var(--mint); }
+.subtitle { font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 500px; margin-bottom: 40px; }
+
+.input-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px; margin-bottom: 20px;
+  transition: border-color 0.2s;
+}
+.input-card:focus-within { border-color: rgba(126,232,200,0.2); }
+.input-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+textarea {
+  width: 100%; min-height: 140px; background: transparent;
+  border: none; outline: none; color: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.7;
+  resize: vertical; caret-color: var(--mint);
+}
+textarea::placeholder { color: rgba(138,155,176,0.4); }
+.input-hint { font-size: 12px; color: var(--muted); margin-top: 10px; opacity: 0.6; }
+
+.btn-primary {
+  width: 100%; padding: 16px 28px;
+  background: linear-gradient(135deg, var(--pink), #c8458a);
+  color: white; border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,93,154,0.3); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.spinner { width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+.btn-primary.loading .spinner { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── IDEA DETAIL VIEW ── */
+.idea-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px; margin-bottom: 36px;
+}
+.idea-header-left h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px; line-height: 1.25; margin-bottom: 8px;
+}
+.idea-header-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 8px 14px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn-ghost:hover { border-color: var(--pink); color: var(--pink); }
+.btn-ghost.danger:hover { border-color: var(--pink); color: var(--pink); }
+
+/* Score card */
+.score-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  display: flex; align-items: center; gap: 24px; margin-bottom: 20px;
+}
+.score-ring { position: relative; flex-shrink: 0; width: 80px; height: 80px; }
+.score-ring svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+.score-ring circle { fill: none; stroke-width: 5; stroke-linecap: round; }
+.ring-bg { stroke: rgba(255,255,255,0.07); }
+.ring-fill { stroke: var(--mint); stroke-dasharray: 201; stroke-dashoffset: 201; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1), stroke 0.4s; }
+.score-num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Serif Display', serif; font-size: 22px;
+}
+.score-meta h3 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 5px; }
+.score-meta p { font-size: 13px; color: rgba(244,247,245,0.75); line-height: 1.6; }
+
+.verdict-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px; margin-bottom: 8px;
+}
+.verdict-pill.green { background: rgba(126,232,200,0.15); color: var(--mint); border: 1px solid rgba(126,232,200,0.3); }
+.verdict-pill.yellow { background: rgba(255,200,80,0.12); color: var(--gold); border: 1px solid rgba(255,200,80,0.25); }
+.verdict-pill.red { background: rgba(232,93,154,0.12); color: var(--pink); border: 1px solid rgba(232,93,154,0.25); }
+
+/* Analysis cards */
+.analysis-grid { display: grid; gap: 14px; margin-bottom: 20px; }
+.acard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 13px; padding: 22px;
+}
+.acard h4 { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+.acard h4.pos { color: var(--mint); }
+.acard h4.warn { color: var(--gold); }
+.acard h4.act { color: var(--pink); }
+.acard h4.neutral { color: var(--muted); }
+.acard ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.acard li { font-size: 14px; line-height: 1.7; color: rgba(244,247,245,0.82); }
+.acard li::before { content: '→'; margin-right: 8px; opacity: 0.4; }
+.okr-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.okr-tag { font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 6px; border: 1px solid; }
+.okr-tag.hit { background: rgba(126,232,200,0.1); color: var(--mint); border-color: rgba(126,232,200,0.25); }
+.okr-tag.miss { background: rgba(138,155,176,0.07); color: var(--muted); border-color: rgba(138,155,176,0.14); }
+
+/* History timeline */
+.history-section { margin-bottom: 28px; }
+.history-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.history-entry {
+  border-left: 2px solid var(--border); padding-left: 16px; margin-bottom: 18px;
+  position: relative;
+}
+.history-entry::before {
+  content: ''; position: absolute; left: -5px; top: 6px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--navy-light);
+  border: 2px solid var(--muted);
+}
+.history-entry.latest::before { border-color: var(--mint); background: var(--navy); }
+.history-entry-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.history-score { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.history-score.green { background: rgba(126,232,200,0.12); color: var(--mint); }
+.history-score.yellow { background: rgba(255,200,80,0.1); color: var(--gold); }
+.history-score.red { background: rgba(232,93,154,0.1); color: var(--pink); }
+.history-date { font-size: 11px; color: var(--muted); }
+.history-iter-label { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 8px; }
+.history-text { font-size: 13px; color: rgba(244,247,245,0.7); line-height: 1.6; font-style: italic; }
+.delta-badge {
+  font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 8px;
+}
+.delta-badge.up { background: rgba(126,232,200,0.12); color: var(--mint); }
+.delta-badge.down { background: rgba(232,93,154,0.1); color: var(--pink); }
+.delta-badge.same { background: rgba(138,155,176,0.1); color: var(--muted); }
+
+/* Iterate box */
+.iterate-box {
+  background: rgba(126,232,200,0.04); border: 1px solid rgba(126,232,200,0.15);
+  border-radius: 16px; padding: 24px; margin-bottom: 20px;
+}
+.iterate-box .input-label { color: var(--mint); opacity: 0.7; }
+.iterate-hint {
+  font-size: 12px; color: rgba(126,232,200,0.5); margin-top: 10px; line-height: 1.6;
+}
+.btn-iterate {
+  margin-top: 14px; width: 100%; padding: 13px 20px;
+  background: rgba(126,232,200,0.12); color: var(--mint);
+  border: 1px solid rgba(126,232,200,0.25); border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-iterate:hover:not(:disabled) { background: rgba(126,232,200,0.18); transform: translateY(-1px); }
+.btn-iterate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* Error */
+.error-msg {
+  background: rgba(232,93,154,0.1); border: 1px solid rgba(232,93,154,0.25);
+  border-radius: 10px; padding: 14px 18px; font-size: 13px; color: var(--pink);
+  display: none; margin-bottom: 14px;
+}
+
+.section-divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+.footnote { font-size: 11px; color: rgba(138,155,176,0.4); line-height: 1.7; margin-top: 40px; }
+
+/* Score trend sparkline */
+.trend-line { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+.trend-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.trend-arrow { font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .sidebar { display: none; }
+  .main-inner { padding: 32px 20px 80px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <div class="logo-mark">S</div>
+      <span class="logo-name">Sticos</span>
+    </div>
+    <div class="sidebar-title">Idearkiv</div>
+    <button class="btn-new" onclick="showNew()">
+      <span>+</span> Ny idé
+    </button>
+  </div>
+  <div class="archive-controls">
+    <button class="sort-btn active" id="sortNewest" onclick="setSortOrder('newest')">Nyeste</button>
+    <button class="sort-btn" id="sortScore" onclick="setSortOrder('score')">Høyest score</button>
+  </div>
+  <div class="archive-list" id="archiveList">
+    <div class="archive-empty">Ingen ideer ennå.<br>Start med å skrive inn<br>din første idé.</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="main-inner">
+
+  <!-- VIEW: NEW IDEA -->
+  <div class="view active" id="viewNew">
+    <div class="eyebrow">Strategiverktøy 2026</div>
+    <h1>Er dette <em>i tråd</em><br>med strategien vår?</h1>
+    <p class="subtitle">Beskriv hva du ønsker å gjøre, prioritere eller beslutte. Vi vurderer det mot Sticos' strategi, OKR-er og ambisjoner for 2026.</p>
+
+    <div class="input-card">
+      <label class="input-label" for="newInput">Beskriv idéen din</label>
+      <textarea id="newInput" placeholder="F.eks: «Jeg vil bruke neste kvartal på å bygge et nytt rapporteringsverktøy for HR-avdelingen» — eller lim inn et notat, initiativ, prosjektforslag..."></textarea>
+      <div class="input-hint">Skriv fritt — jo mer kontekst, jo bedre vurdering. Cmd+Enter sender.</div>
+    </div>
+    <div class="error-msg" id="newError"></div>
+    <button class="btn-primary" id="newBtn" onclick="submitNew()">
+      <div class="spinner"></div>
+      <span>Vurder mot strategien</span>
+    </button>
+  </div>
+
+  <!-- VIEW: IDEA DETAIL -->
+  <div class="view" id="viewIdea">
+    <div class="idea-header">
+      <div class="idea-header-left">
+        <h2 id="ideaTitle"></h2>
+        <div class="idea-header-meta">
+          <span id="ideaIterCount" class="idea-iter-count" style="font-size:12px;color:var(--muted);background:rgba(255,255,255,0.07);padding:3px 9px;border-radius:10px;"></span>
+          <span id="ideaDateCreated" style="font-size:12px;color:var(--muted);"></span>
+        </div>
+      </div>
+      <button class="btn-ghost danger" onclick="deleteIdea()">Slett</button>
+    </div>
+
+    <!-- Latest score -->
+    <div class="score-card" id="ideaScoreCard">
+      <div class="score-ring">
+        <svg viewBox="0 0 80 80">
+          <circle class="ring-bg" cx="40" cy="40" r="32"/>
+          <circle class="ring-fill" id="ideaRingFill" cx="40" cy="40" r="32"/>
+        </svg>
+        <div class="score-num" id="ideaScoreNum">—</div>
+      </div>
+      <div class="score-meta">
+        <div class="verdict-pill" id="ideaVerdictPill"></div>
+        <h3 id="ideaScoreTitle"></h3>
+        <p id="ideaScoreSummary"></p>
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <div class="analysis-grid" id="ideaAnalysisGrid"></div>
+
+    <div class="section-divider"></div>
+
+    <!-- Iterate -->
+    <div class="iterate-box">
+      <label class="input-label">Juster idéen din</label>
+      <textarea id="iterateInput" style="min-height:100px;width:100%;background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;resize:vertical;caret-color:var(--mint);" placeholder="Beskriv hva du vil endre, legge til eller ta bort fra idéen din. AI-en husker all tidligere kontekst og hjelper deg å tette strategiske gap..."></textarea>
+      <div class="iterate-hint">Tip: prøv å adressere et av de strategiske gapene over for å løfte scoren din.</div>
+      <button class="btn-iterate" id="iterateBtn" onclick="submitIterate()">
+        <div class="spinner"></div>
+        <span>Send ny versjon</span>
+      </button>
+    </div>
+    <div class="error-msg" id="iterateError"></div>
+
+    <div class="section-divider"></div>
+
+    <!-- History -->
+    <div class="history-section" id="historySection"></div>
+
+    <div class="footnote">
+      Basert på Sticos Strategi 2026 · Vinnende ambisjon · 4 OKR-er · BHAGs 2028<br>
+      AI-generert vurdering — ikke et substitutt for lederskap og skjønn.
+    </div>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script>
+// ─── STRATEGY SYSTEM PROMPT ───────────────────────────────────────────────────
+const SYSTEM = `Du er Sticos' interne strategirådgiver. Du vurderer om ideer, initiativ og forslag er i tråd med Sticos' strategi for 2026.
+
+STICOS STRATEGI 2026 — "The year of the agents"
+
+VINNENDE AMBISJON:
+- Gi kundene konkurransefortrinn via dokumentert effekt på vekst og lønnsomhet
+- La produktene gjøre jobben FOR kundene ("gjort for deg", ikke "gjør det selv")
+- Gå fra verktøy til autonome agenter
+
+LEDESTJERNE: Riktig og effektiv etterlevelse med minimal innsats. Alltid i front av teknologisk utvikling.
+
+HVOR VI SPILLER: Primært norsk marked (regnskap, lønn, revisjon). Nordisk ekspansjon via revisjon.
+
+HVORDAN VINNE:
+1. Fra "gjør det selv" til "gjort for deg" via autonome agenter (Zipp som grunnmur)
+2. Unik posisjon: kan utføre oppgaver i egne OG kundenes fagsystemer
+3. Overlegen produktpakke: Zipp kombinert med hele porteføljen
+
+4 OKR-ER 2026:
+01 PEOPLE: Samstemt og samarbeidende kultur. KR: Peakon Strategy >50, kompetanseplaner for alle, Peakon Recognition >60.
+02 CUSTOMERS: Lojale kunder blir mer verdifulle. KR: NRR >105, pNPS >45. Cross-/upsalg i alle avdelinger. Zipp til alle Oppslag-kunder.
+03 TECH — THE BIG SHIFT AI IN ALL WE DO: KR: 25% reduksjon lead time (AI-koding), 30% kundehenvendelser via AI-agenter (CSAT >85%), 30% kundedialog tilpasset via AI. Initiativ: agentic architecture framework, monthly AI-Only days, GitHub Copilot + Coding Agent i alle team.
+04 GROWTH: KR: Net customer growth >6000, >40M ARR fra AI. Initiativ: Oppslag/Personal Zipp i tredjepartssystemer, Sticos Agentic Hub, Kundekontroll i Descartes, Sticontakt/Kundeportal.
+
+BHAG 2028: 90% First Contact Resolution, norsk markedsleder >500mNOK ARR, 200K+ brukere via Visma.
+
+Instruksjoner:
+- Du er direkte og analytisk. Ikke unødvendig positiv.
+- Bruk norsk i alle tekstfelt.
+- Svar KUN som JSON, ingen markdown eller tekst utenfor JSON.
+
+JSON-format:
+{
+  "score": <0-100>,
+  "verdict": "<Sterk strategisk match|God strategisk match|Delvis strategisk match|Svak strategisk match|Ikke strategisk match>",
+  "verdict_level": "<green|yellow|red>",
+  "headline": "<maks 10 ord>",
+  "summary": "<2-3 setninger, direkte vurdering>",
+  "strengths": ["<s1>","<s2>"],
+  "gaps": ["<g1>","<g2>"],
+  "recommendations": ["<r1>","<r2>","<r3>"],
+  "okr_alignment": { "people": <bool>, "customers": <bool>, "tech": <bool>, "growth": <bool> }
+}`;
+
+// ─── STATE & STORAGE ──────────────────────────────────────────────────────────
+let ideas = [];
+let activeIdeaId = null;
+let sortOrder = 'newest';
+
+function save() {
+  try { localStorage.setItem('sticos_ideas_v2', JSON.stringify(ideas)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem('sticos_ideas_v2');
+    if (raw) ideas = JSON.parse(raw);
+  } catch(e) { ideas = []; }
+}
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function scoreClass(s) { return s >= 65 ? 'green' : s >= 40 ? 'yellow' : 'red'; }
+function fmt(ts) { return new Date(ts).toLocaleDateString('no-NO', { day:'numeric', month:'short' }); }
+
+// ─── ANALYZE ─────────────────────────────────────────────────────────────────
+async function callAPI(messages) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SYSTEM,
+      messages
+    })
+  });
+  if (!res.ok) throw new Error('API ' + res.status);
+  const data = await res.json();
+  let raw = data.content.map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+  return JSON.parse(raw);
+}
+
+function buildMessages(iterations) {
+  // Build full conversation history for context
+  const msgs = [];
+  for (let i = 0; i < iterations.length; i++) {
+    const iter = iterations[i];
+    msgs.push({ role: 'user', content: iter.input });
+    if (i < iterations.length - 1) {
+      // Previous analysis as assistant context
+      msgs.push({ role: 'assistant', content: JSON.stringify(iter.result) });
+    }
+  }
+  return msgs;
+}
+
+// ─── NEW IDEA ─────────────────────────────────────────────────────────────────
+async function submitNew() {
+  const input = document.getElementById('newInput').value.trim();
+  const errEl = document.getElementById('newError');
+  const btn = document.getElementById('newBtn');
+  errEl.style.display = 'none';
+
+  if (input.length < 20) {
+    errEl.textContent = 'Skriv litt mer — vi trenger nok kontekst for en god vurdering.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.classList.add('loading'); btn.disabled = true;
+
+  try {
+    const result = await callAPI([{ role: 'user', content: input }]);
+
+    const idea = {
+      id: genId(),
+      title: result.headline,
+      createdAt: Date.now(),
+      iterations: [{
+        input,
+        result,
+        timestamp: Date.now()
+      }]
+    };
+
+    ideas.unshift(idea);
+    save();
+    renderArchive();
+    openIdea(idea.id);
+    document.getElementById('newInput').value = '';
+
+  } catch(e) {
+    errEl.textContent = 'Noe gikk galt: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+// ─── ITERATE ──────────────────────────────────────────────────────────────────
+async function submitIterate() {
+  const input = document.getElementById('iterateInput').value.trim();
+  const errEl = document.getElementById('iterateError');
+  const btn = document.getElementById('iterateBtn');
+  errEl.style.display = 'none';
+
+  if (input.length < 15) {
+    errEl.textContent = 'Beskriv hva du vil justere.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const idea = ideas.find(x => x.id === activeIdeaId);
+  if (!idea) return;
+
+  btn.classList.add('loading'); btn.disabled = true;
+
+  try {
+    // Build conversation: all previous iterations as context, then new input
+    const msgs = buildMessages(idea.iterations);
+    // Add assistant response for last iteration
+    msgs.push({ role: 'assistant', content: JSON.stringify(idea.iterations[idea.iterations.length-1].result) });
+    // New user message: acknowledge context + new iteration
+    const contextNote = `[Iterasjon ${idea.iterations.length + 1}] Bruker justerer idéen basert på forrige vurdering. Ny input: ${input}`;
+    msgs.push({ role: 'user', content: contextNote });
+
+    const result = await callAPI(msgs);
+
+    idea.iterations.push({ input, result, timestamp: Date.now() });
+    // Update title to latest headline
+    idea.title = result.headline;
+    save();
+    renderArchive();
+    renderIdeaView(idea);
+    document.getElementById('iterateInput').value = '';
+    document.getElementById('ideaScoreCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) {
+    errEl.textContent = 'Noe gikk galt: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+// ─── VIEWS ────────────────────────────────────────────────────────────────────
+function showNew() {
+  activeIdeaId = null;
+  document.getElementById('viewNew').classList.add('active');
+  document.getElementById('viewIdea').classList.remove('active');
+  renderArchive();
+}
+
+function openIdea(id) {
+  const idea = ideas.find(x => x.id === id);
+  if (!idea) return;
+  activeIdeaId = id;
+  document.getElementById('viewNew').classList.remove('active');
+  document.getElementById('viewIdea').classList.add('active');
+  renderIdeaView(idea);
+  renderArchive();
+}
+
+function renderIdeaView(idea) {
+  const latest = idea.iterations[idea.iterations.length - 1];
+  const r = latest.result;
+
+  document.getElementById('ideaTitle').textContent = idea.title;
+  document.getElementById('ideaIterCount').textContent =
+    idea.iterations.length === 1 ? '1 versjon' : `${idea.iterations.length} versjoner`;
+  document.getElementById('ideaDateCreated').textContent = 'Opprettet ' + fmt(idea.createdAt);
+
+  // Score ring
+  const fill = document.getElementById('ideaRingFill');
+  const circ = 201;
+  const sc = scoreClass(r.score);
+  fill.style.stroke = sc === 'green' ? 'var(--mint)' : sc === 'yellow' ? 'var(--gold)' : 'var(--pink)';
+  setTimeout(() => { fill.style.strokeDashoffset = circ - (r.score / 100) * circ; }, 50);
+  document.getElementById('ideaScoreNum').textContent = r.score;
+
+  const pill = document.getElementById('ideaVerdictPill');
+  pill.className = 'verdict-pill ' + r.verdict_level;
+  pill.innerHTML = `${r.verdict_level === 'green' ? '●' : r.verdict_level === 'yellow' ? '◐' : '○'} ${r.verdict}`;
+
+  document.getElementById('ideaScoreTitle').textContent = r.headline;
+  document.getElementById('ideaScoreSummary').textContent = r.summary;
+
+  // Analysis
+  const grid = document.getElementById('ideaAnalysisGrid');
+  grid.innerHTML = '';
+  if (r.strengths?.length) {
+    grid.innerHTML += `<div class="acard"><h4 class="pos">✓ Strategiske styrker</h4><ul>${r.strengths.map(s=>`<li>${s}</li>`).join('')}</ul></div>`;
+  }
+  if (r.gaps?.length) {
+    grid.innerHTML += `<div class="acard"><h4 class="warn">△ Strategiske gap</h4><ul>${r.gaps.map(g=>`<li>${g}</li>`).join('')}</ul></div>`;
+  }
+  if (r.recommendations?.length) {
+    grid.innerHTML += `<div class="acard"><h4 class="act">→ Konkrete anbefalinger</h4><ul>${r.recommendations.map(rec=>`<li>${rec}</li>`).join('')}</ul></div>`;
+  }
+  if (r.okr_alignment) {
+    const labels = { people:'01 People', customers:'02 Customers', tech:'03 Tech', growth:'04 Growth' };
+    const tags = Object.entries(r.okr_alignment).map(([k,v]) =>
+      `<span class="okr-tag ${v?'hit':'miss'}">${v?'✓':'○'} ${labels[k]}</span>`).join('');
+    grid.innerHTML += `<div class="acard"><h4 class="neutral">OKR-alignment</h4><div class="okr-row">${tags}</div></div>`;
+  }
+
+  // History (reverse: newest first)
+  const hist = document.getElementById('historySection');
+  if (idea.iterations.length > 1) {
+    hist.style.display = 'block';
+    hist.innerHTML = `<div class="history-title">Versjonshistorikk</div>`;
+    const reversed = [...idea.iterations].reverse();
+    reversed.forEach((iter, ri) => {
+      const realIdx = idea.iterations.length - 1 - ri;
+      const isLatest = ri === 0;
+      const sc2 = scoreClass(iter.result.score);
+      let delta = '';
+      if (!isLatest && ri < reversed.length - 1) {
+        const prevScore = reversed[ri + 1].result.score;
+        const diff = iter.result.score - prevScore;
+        if (diff > 0) delta = `<span class="delta-badge up">+${diff}</span>`;
+        else if (diff < 0) delta = `<span class="delta-badge down">${diff}</span>`;
+        else delta = `<span class="delta-badge same">±0</span>`;
+      }
+      hist.innerHTML += `
+        <div class="history-entry ${isLatest?'latest':''}">
+          <div class="history-entry-header">
+            <span class="history-score ${sc2}">${iter.result.score}</span>
+            <span class="history-iter-label">v${realIdx + 1}</span>
+            ${delta}
+            <span class="history-date">${fmt(iter.timestamp)}</span>
+          </div>
+          <div class="history-text">${iter.input.slice(0, 140)}${iter.input.length > 140 ? '...' : ''}</div>
+        </div>`;
+    });
+  } else {
+    hist.style.display = 'none';
+  }
+}
+
+// ─── ARCHIVE ──────────────────────────────────────────────────────────────────
+function setSortOrder(order) {
+  sortOrder = order;
+  document.getElementById('sortNewest').classList.toggle('active', order === 'newest');
+  document.getElementById('sortScore').classList.toggle('active', order === 'score');
+  renderArchive();
+}
+
+function renderArchive() {
+  const list = document.getElementById('archiveList');
+  if (!ideas.length) {
+    list.innerHTML = '<div class="archive-empty">Ingen ideer ennå.<br>Start med å skrive inn<br>din første idé.</div>';
+    return;
+  }
+
+  let sorted = [...ideas];
+  if (sortOrder === 'score') {
+    sorted.sort((a, b) => {
+      const sa = a.iterations[a.iterations.length-1].result.score;
+      const sb = b.iterations[b.iterations.length-1].result.score;
+      return sb - sa;
+    });
+  } else {
+    sorted.sort((a, b) => b.createdAt - a.createdAt);
+  }
+
+  list.innerHTML = sorted.map(idea => {
+    const latest = idea.iterations[idea.iterations.length-1];
+    const sc = scoreClass(latest.result.score);
+    const isActive = idea.id === activeIdeaId;
+    const iterLabel = idea.iterations.length > 1 ? `<span class="idea-iter-count">${idea.iterations.length} v</span>` : '';
+    return `
+      <div class="idea-item ${isActive?'active':''}" onclick="openIdea('${idea.id}')">
+        <div class="idea-item-top">
+          <div class="idea-title">${idea.title}</div>
+          <span class="idea-score-badge ${sc}">${latest.result.score}</span>
+        </div>
+        <div class="idea-meta">
+          <span>${fmt(idea.createdAt)}</span>
+          ${iterLabel}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+function deleteIdea() {
+  if (!activeIdeaId) return;
+  if (!confirm('Slette denne idéen og all historikk?')) return;
+  ideas = ideas.filter(x => x.id !== activeIdeaId);
+  save();
+  showNew();
+}
+
+// ─── KEYBOARD SHORTCUTS ───────────────────────────────────────────────────────
+document.getElementById('newInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) submitNew();
+});
+document.getElementById('iterateInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) submitIterate();
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+load();
+renderArchive();
+</script>
+</body>
+</html>
